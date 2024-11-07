@@ -11,26 +11,26 @@ export const sendMail = async ({email, emailType , userId}:any) => {
 
       const hashedToken = await bcryptjs.hash(userId.toString() , 10)
 
-
+// SENDING TOKENS IN DATABASE
         if (emailType === 'VERIFY') {
           await User.findByIdAndUpdate(userId , 
-            {
-              verifyToken: hashedToken,
-              verifyTokenExpiry: Date.now() + 3600000
+            {$set:
+             { verifyToken: hashedToken,
+              verifyTokenExpiry: Date.now() + 3600000}
             }
           )
         } else if (emailType === 'RESET') {
           await User.findByIdAndUpdate(userId , 
-            {
-              forgotPasswordToken: hashedToken,
-              forgotPasswordTokenExpiry: Date.now() + 3600000
+            {$set:
+              {forgotPasswordToken: hashedToken,
+              forgotPasswordTokenExpiry: Date.now() + 3600000}
             }
           )
         }
           
         
 
-        const transport = nodemailer.createTransport({
+        const transporter = nodemailer.createTransport({
           host: "sandbox.smtp.mailtrap.io",
           port: 2525,
           auth: {
@@ -44,7 +44,7 @@ export const sendMail = async ({email, emailType , userId}:any) => {
 
 
           const mailOptions = {
-            from: 'anshulrastogi180@gmail.com', // sender address
+            from: 'anshul@gmail.com', // sender address
             to: email, 
             subject: emailType==='VERIFY'?"Verify your email" : " reset your password", // Subject line
             html:`"<p> Click <a href = "${process.env.DOMAIN}/verifyemail?token=${hashedToken}"> here </a> to ${emailType === 'VERIFY' ? "verify your email":'resey your pass'}
@@ -53,8 +53,8 @@ export const sendMail = async ({email, emailType , userId}:any) => {
             </p>` , // html body
           }
 
-
-          const mailRseponse = await transport.sendMail(mailOptions)
+//SENDING MAIL BY NODEMALER
+          const mailRseponse = await transporter.sendMail(mailOptions)
           return mailRseponse
 
         
