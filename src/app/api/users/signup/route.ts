@@ -15,7 +15,6 @@ export async function POST(request:NextRequest) {
 
         //VALIDATION
 
-        console.log(reqBody)
 
         const user = await User.findOne({email})
 
@@ -36,7 +35,6 @@ export async function POST(request:NextRequest) {
         })
 
         const savedUser = await newUser.save()
-        console.log(savedUser)
 
 
         await sendMail({email, emailType:'VERIFY',userId: savedUser._id})
