@@ -4,16 +4,14 @@ import User from '@/models/userModel'
 
 import {NextRequest , NextResponse} from 'next/server'
 
-
 connect()
-
 
 export async function POST(request:NextRequest){
 
     try {
 
         const userId =  await getDataFromToken(request)
-        console.log(userId)
+
         const user = await User.findOne({_id: userId}).select("-password")
 
         if (!user) {
@@ -23,7 +21,6 @@ export async function POST(request:NextRequest){
                 }
             )
         }
-        console.log(user)
 
         return NextResponse.json(
             {
@@ -32,8 +29,6 @@ export async function POST(request:NextRequest){
             }
         )
 
-
-        
     } catch (error:any) {
         return NextResponse.json(
             {
